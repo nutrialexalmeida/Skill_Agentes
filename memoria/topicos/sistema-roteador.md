@@ -16,6 +16,7 @@ O repositório `Agentes` usa uma skill inicial chamada `roteador` que roda em to
 ## Trabalho realizado
 
 - 2026-07-12: criado o sistema — skill `roteador`, hook de injeção por mensagem, estrutura de memória e CLAUDE.md.
+- 2026-07-12: PR #1 criado e mesclado na `main` (squash, commit 675b76b). Sistema ativo no repositório; hook confirmado funcionando em sessão real.
 
 ## Pendências
 
