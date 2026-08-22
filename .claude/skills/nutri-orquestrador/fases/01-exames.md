@@ -1,7 +1,7 @@
 # Fase 2a — Análise de exames laboratoriais (finalidade nutricional)
 
 Entrada: bloco `ANAMNESE` + exames fornecidos.
-Saída: bloco `EXAMES` conforme `contratos/handoff.md`.
+Saída: bloco `EXAMES` conforme `../HANDOFF.md`.
 
 ## O que esta fase faz
 

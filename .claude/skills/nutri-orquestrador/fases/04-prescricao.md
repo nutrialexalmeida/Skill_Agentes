@@ -1,7 +1,7 @@
 # Fase 3b — Prescrição do plano alimentar
 
 Entrada: blocos `ANAMNESE`, `EXAMES`, `CALCULO`.
-Saída: bloco `PRESCRICAO` conforme `contratos/handoff.md`.
+Saída: bloco `PRESCRICAO` conforme `../HANDOFF.md`.
 
 Você monta o cardápio real que cumpre as metas que a fase de cálculo
 definiu. Você **não redefine as metas** — se elas parecem erradas, registre
@@ -43,9 +43,9 @@ tolerância de `calculos.json` (padrão assumido 15% se o arquivo não
 existir).
 
 Exceção só nos modos `pre_pos_treino` ou `competicao`, declarados na
-anamnese, com percentuais explícitos, justificativa e nomes das refeições
-estratégicas. Competição exige as fases pré, intra e pós. Proteína e gordura
-seguem uniformes mesmo nesses modos.
+anamnese. Nesse caso leia `../referencia/modos-especiais.md` antes de montar
+— ele traz os requisitos formais de cada modo. Proteína e gordura seguem
+uniformes mesmo neles.
 
 ## Convergência
 
@@ -63,10 +63,20 @@ seguem uniformes mesmo nesses modos.
    - Calorias reais dentro de **±2%** da meta.
    - Proteína, carboidrato e gordura reais dentro de **±5%** das metas.
 
-4. Não entregue um cardápio que não convergiu dizendo que "está próximo".
-   Se depois de várias iterações não convergir, registre em `alertas` o
-   que travou (ex.: restrição alimentar incompatível com a meta de
-   proteína) e devolva ao orquestrador.
+4. Confira seu próprio trabalho antes de devolver, rodando o mesmo
+   validador que a auditoria vai usar:
+
+   ```
+   python ../scripts/validar_plano.py caso.json
+   ```
+
+   Falhou → corrija e rode de novo. Passar aqui evita queimar um ciclo
+   inteiro de auditoria.
+
+5. Não entregue um cardápio que não convergiu dizendo que "está próximo".
+   Se depois de várias iterações não convergir, leia
+   `../referencia/troubleshooting.md`; se ainda assim não fechar, registre
+   em `alertas` o que travou e devolva ao orquestrador.
 
 ## Substituições
 

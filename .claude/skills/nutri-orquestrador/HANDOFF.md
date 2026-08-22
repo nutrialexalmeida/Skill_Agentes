@@ -1,11 +1,21 @@
 # Contrato de handoff entre as fases
 
+## Sumário
+
+- [Regras gerais](#regras-gerais)
+- [ANAMNESE (fase 1)](#anamnese-fase-1)
+- [EXAMES (fase 2a)](#exames-fase-2a)
+- [CALCULO (fase 2b)](#calculo-fase-2b)
+- [SUPLEMENTACAO (fase 3a)](#suplementacao-fase-3a)
+- [PRESCRICAO (fase 3b)](#prescricao-fase-3b)
+- [AUDITORIA (fase 4)](#auditoria-fase-4)
+
 Toda fase termina emitindo um bloco JSON com a chave que leva seu nome.
 Esses blocos são o único meio de comunicação entre as fases — em Modo Code
 porque o subagente não vê a conversa, e em Modo App para que a auditoria
 tenha o que conferir sem depender de memória.
 
-Regras gerais:
+## Regras gerais
 
 - Campo desconhecido → `null`. Nunca invente valor para preencher schema.
 - Campo que a fase decidiu não aplicar → preencha e explique em

@@ -2,7 +2,15 @@
 
 Entrada: blocos `ANAMNESE`, `EXAMES`, `CALCULO`, `SUPLEMENTACAO`,
 `PRESCRICAO`.
-Saída: bloco `AUDITORIA` conforme `contratos/handoff.md`.
+Saída: bloco `AUDITORIA` conforme `../HANDOFF.md`.
+
+## Sumário
+
+- [Postura](#postura)
+- [Passo 1 — Rodar o validador automático](#passo-1--rodar-o-validador-automatico)
+- [Passo 2 — Checklist de julgamento](#checklist--todos-precisam-passar)
+- [Passo 3 — Coerência entre as fases](#auditar-tambem-a-coerencia-entre-as-fases)
+- [Entrega final](#entrega-final-so-apos-veredito-aprovado)
 
 ## Postura
 
@@ -14,14 +22,41 @@ Você não participou da montagem e isso é uma vantagem: não sabe o que o
 autor "quis" fazer, então não preenche lacuna com boa vontade. Confira o que
 está escrito, não o que faria sentido estar escrito.
 
-**Refaça as contas.** Some os macros de cada refeição a partir dos alimentos
-listados e compare com os totais declarados. Um total declarado que não bate
-com a soma dos itens é a falha mais comum e a mais fácil de passar batido.
+## Passo 1 — Rodar o validador automático
+
+Aritmética é trabalho de script, não de julgamento. Antes de qualquer coisa,
+monte um JSON com os blocos `CALCULO` e `PRESCRICAO` e rode:
+
+```
+python scripts/validar_plano.py caso.json
+```
+
+Ele confere de forma determinística os itens 8 a 14 e 16 a 17 do checklist:
+somas por refeição, totais do dia, tolerâncias de ±2% e ±5%, uniformidade de
+proteína e gordura, pirâmide de carboidrato par a par, e gramas explícitas.
+
+Ciclo de feedback:
+
+1. Rode o validador.
+2. Saiu código 1 → há falhas. Registre cada uma com a evidência numérica que
+   o script imprimiu e devolva `veredito: reprovado`. **Não corrija.**
+3. Saiu código 2 → a entrada está malformada. Isso também é falha: a fase que
+   emitiu o bloco não seguiu o contrato de `../HANDOFF.md`.
+4. Saiu código 0 → siga para o Passo 2.
+
+Script indisponível → **refaça as contas você mesmo**, à mão. Some os macros
+de cada refeição a partir dos alimentos listados e compare com os totais
+declarados; confira a pirâmide par a par. Um total declarado que não bate com
+a soma dos itens é a falha mais comum e a mais fácil de passar batido.
+
+Validador aprovado **não é** plano aprovado: ele cobre só o que é aritmética.
+Todo o resto do checklist continua sendo seu.
 
 ## Checklist — todos precisam passar
 
 Marque cada item com `passou`/`falhou` e a **evidência numérica** que
-sustenta o veredito. "Parece correto" não é evidência.
+sustenta o veredito. "Parece correto" não é evidência. Para os itens que o
+validador cobre, a evidência é a linha que ele imprimiu.
 
 1. Dados essenciais confirmados na anamnese.
 2. Triagem de segurança feita, e nenhuma barreira ativa ignorada.
@@ -41,7 +76,9 @@ sustenta o veredito. "Parece correto" não é evidência.
     refeição — confira par a par, não "no geral".
 15. Qualquer exceção à pirâmide limitada a `pre_pos_treino` ou
     `competicao`, com justificativa e refeições estratégicas nomeadas; se
-    competição, com as fases pré, intra e pós presentes.
+    competição, com as fases pré, intra e pós presentes. Neste caso leia
+    `../referencia/modos-especiais.md` — o validador **não** reprova a
+    quebra em modo especial, então este item é inteiramente seu.
 16. Todos os alimentos presentes na base, com quantidade explícita em
     gramas.
 17. Nenhum "livre"/"à vontade" em item que contribui para a meta.

@@ -69,11 +69,73 @@ não consenso fechado.
   `nutri-orquestrador`, nunca chamar subagente direto) e documentada no
   `CLAUDE.md`. Branch `claude/skill-review-improvements-fxhipo`.
 
+## Reorganização em pacote modular (2026-08-22, segunda rodada)
+
+Reestruturado seguindo as práticas oficiais de autoria de skills, em três
+camadas por **frequência de uso** (não por importância):
+
+- `fases/` — lido em todo atendimento.
+- `referencia/` — lido só quando a condição aparece: `modos-especiais.md`
+  (modo != padrao), `evidencias.md` (questionaram o porquê),
+  `troubleshooting.md` (algo travou), `incorporar-material.md` (processar
+  entrada/).
+- `scripts/validar_plano.py` — executado, não lido.
+
+Decisões desta rodada:
+
+- **Critério de divisão**: conteúdo sempre necessário fica na fase; só vai
+  para `referencia/` o que é genuinamente condicional. Evitou-se mover a
+  tabela de equações de GER (sempre necessária) — só a justificativa de
+  evidência dela saiu.
+- `contratos/handoff.md` virou `HANDOFF.md` na raiz (pasta com um arquivo só
+  era estrutura vazia). `README.md` virou `MANUTENCAO.md` (é doc de
+  mantenedor, não de execução).
+- **Validador determinístico** criado e testado: confere somas por refeição,
+  totais do dia, tolerâncias ±2%/±5%, uniformidade P/G, pirâmide de
+  carboidrato par a par e gramas explícitas. Códigos de saída 0/1/2.
+  Tolerâncias vêm de `calculos.json` quando existe; senão usa padrões
+  declarados no próprio script, e informa a origem na saída. Em modo
+  especial ele **não** reprova a quebra da pirâmide — só conta e devolve
+  para julgamento humano.
+- Ciclo de feedback: a fase de prescrição roda o mesmo validador antes de
+  devolver, para não queimar ciclo de auditoria.
+- **Três evals** criados (`evals/`): adulto saudável (caminho feliz),
+  barreira de segurança (adolescente com pedido de déficit agressivo — testa
+  a interrupção), modo competição (exceção formal + três fases
+  obrigatórias). Sem executor automático: rodar manualmente, em sessão
+  limpa, nos três modelos e nos dois modos.
+- **Pasta `entrada/`** criada na raiz do repositório (não dentro da skill,
+  para não poluir o pacote que sobe ao claude.ai). Usuário solta material
+  novo lá e pede "processa a entrada". Fluxo em
+  `referencia/incorporar-material.md`: classificar → questionar origem,
+  conflito, força de evidência e impacto em segurança → propor destino →
+  **aguardar confirmação antes de mudar regra clínica** → aplicar →
+  arquivar em `entrada/processados/AAAA-MM/`.
+- Caminhos relativos normalizados: arquivo em subpasta usa `../` para
+  referenciar irmãos de outra pasta.
+
+Tamanhos: SKILL.md 135 linhas, maior arquivo de fase 125, validador 385.
+Todos bem abaixo do limite de 500.
+
+## Ressalva sobre "alta liberdade"
+
+O guia pedia "alta liberdade (instruções baseadas em texto)". Aplicado
+**diferencialmente**, não de forma uniforme — o próprio princípio diz para
+ajustar à fragilidade da tarefa:
+
+- Alta liberdade: conversa de anamnese, escolha de alimentos, redação da
+  entrega.
+- Baixa liberdade (especificação apertada): barreiras de segurança,
+  tolerâncias numéricas, gate regulatório, checklist de auditoria. São
+  tarefas frágeis, de baixa variabilidade e alto custo de erro.
+
 ## Pendências
 
-- **Não testado end-to-end.** Nenhum caso real foi rodado ainda. Validar com
-  pelo menos três casos: adulto saudável, caso com restrição clínica que
-  dispara barreira de segurança, e caso modo competição.
+- **Não testado end-to-end.** Os três evals foram escritos mas nunca
+  executados. O validador Python foi testado (caso conforme, caso com 9
+  defeitos plantados, entrada malformada — todos com o resultado esperado),
+  mas o fluxo completo do atendimento não. Rodar `evals/` em sessão limpa,
+  nos três modelos e nos dois modos, antes de usar em atendimento real.
 - Os scripts e o `knowledge_base/` da nutriplanner-pro não estão neste
   repositório — as fases os referenciam mas caem em modo manual. Decidir se
   vale trazer a nutriplanner-pro para cá e unificar.

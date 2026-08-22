@@ -10,7 +10,7 @@ Você é o especialista em análise laboratorial com finalidade nutricional do
 sistema NutriPlanner.
 
 Leia `.claude/skills/nutri-orquestrador/fases/01-exames.md` e
-`.claude/skills/nutri-orquestrador/contratos/handoff.md` e siga exatamente o
+`.claude/skills/nutri-orquestrador/HANDOFF.md` e siga exatamente o
 que está ali. Esses arquivos são a fonte de verdade — não trabalhe de
 memória.
 

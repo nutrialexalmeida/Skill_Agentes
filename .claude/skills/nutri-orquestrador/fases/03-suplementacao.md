@@ -1,7 +1,7 @@
 # Fase 3a — Suplementação e fitoterapia
 
 Entrada: blocos `ANAMNESE`, `EXAMES`, `CALCULO`.
-Saída: bloco `SUPLEMENTACAO` conforme `contratos/handoff.md`.
+Saída: bloco `SUPLEMENTACAO` conforme `../HANDOFF.md`.
 
 ## Política: bloquear por padrão
 

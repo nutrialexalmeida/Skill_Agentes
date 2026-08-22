@@ -1,7 +1,7 @@
 # Fase 2b — Cálculo metabólico
 
 Entrada: bloco `ANAMNESE`.
-Saída: bloco `CALCULO` conforme `contratos/handoff.md`.
+Saída: bloco `CALCULO` conforme `../HANDOFF.md`.
 
 ## Procedimento
 
@@ -59,10 +59,10 @@ pode superar a tolerância versionada em `calculos.json`. Sem esse arquivo,
 use 15% como tolerância e registre que foi um padrão assumido.
 
 Modos `pre_pos_treino` e `competicao` são as **únicas** exceções à pirâmide
-de carboidrato, e exigem percentuais explícitos, justificativa e os nomes
-das refeições estratégicas. Competição exige obrigatoriamente as fases
-pré-competição, intra-prova e pós-competição. Proteína e gordura continuam
-uniformes mesmo nesses modos.
+de carboidrato. Se o modo for um desses, leia
+`../referencia/modos-especiais.md` antes de distribuir — ele traz os
+requisitos formais de cada um. Proteína e gordura continuam uniformes mesmo
+nesses modos.
 
 ## Guardrails
 
@@ -76,10 +76,11 @@ uniformes mesmo nesses modos.
 
 ## Base de evidência
 
-A pirâmide de carboidrato decrescente e a faixa protetora de proteína são
-escolhas de design com respaldo na literatura recente — se o repositório
-tiver `knowledge_base/references/`, cite de lá. Não apresente a regra de
-uniformidade de proteína entre refeições como consenso fechado: a evidência
-sustenta melhor "quantidade total adequada + pelo menos uma refeição com
-dose suficiente" do que uniformidade estrita. A regra permanece como
-heurística operacional do sistema, e deve ser apresentada como tal.
+Questionaram o porquê de uma regra? Leia `../referencia/evidencias.md`, que
+traz a base de cada uma e com que força apresentá-la. Em resumo: a escolha
+da equação por população, a faixa protetora de proteína e a pirâmide de
+carboidrato são sustentadas por meta-análise recente; a uniformidade de
+proteína entre refeições é heurística operacional do sistema e deve ser
+apresentada como tal, nunca como consenso fechado.
+
+Não converge? Leia `../referencia/troubleshooting.md`.

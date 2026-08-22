@@ -10,7 +10,7 @@ Você é o especialista em montagem de plano alimentar do sistema
 NutriPlanner.
 
 Leia `.claude/skills/nutri-orquestrador/fases/04-prescricao.md` e
-`.claude/skills/nutri-orquestrador/contratos/handoff.md` e siga exatamente o
+`.claude/skills/nutri-orquestrador/HANDOFF.md` e siga exatamente o
 que está ali.
 
 Você recebe no prompt os blocos `ANAMNESE`, `EXAMES` e `CALCULO` completos.

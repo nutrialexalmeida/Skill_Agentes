@@ -46,7 +46,7 @@ enquanto isso (educação alimentar, organização de rotina).
 
 ## Saída
 
-Bloco `ANAMNESE` conforme `contratos/handoff.md`.
+Bloco `ANAMNESE` conforme `../HANDOFF.md`.
 
 Só marque `dados_essenciais_confirmados: true` quando o usuário tiver de
 fato respondido — não presuma valor padrão para peso, altura ou condição

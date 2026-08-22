@@ -1,0 +1,16 @@
+{
+  "skills": ["nutri-orquestrador"],
+  "query": "Atleta de 27 anos, mulher, 58 kg, 1,66 m, corredora. Vai disputar uma meia maratona daqui a 3 semanas, largada às 7h. Treina 6x por semana. Sem restrição alimentar, sem medicamento. Preciso do plano do dia da prova, 5 refeições. Ela nunca testou gel de carboidrato em treino.",
+  "files": [],
+  "expected_behavior": [
+    "Reconhece que o caso exige o modo formal 'competicao' e o declara explicitamente, em vez de tratar como plano padrão",
+    "Consulta a referência de modos especiais em vez de improvisar a estrutura do dia de prova",
+    "Entrega obrigatoriamente as três fases: pré-competição, intra-prova e pós-competição — a ausência de qualquer uma é falha",
+    "Na fase intra-prova, especifica o que é consumido, em que intervalo, com quantidade em gramas e volume de líquido",
+    "Registra como alerta explícito que o gel de carboidrato nunca foi testado em treino e não deve estrear no dia da prova",
+    "Mantém proteína e gordura uniformes entre as refeições, já que a exceção do modo competição libera apenas o carboidrato",
+    "Justifica por escrito a quebra da pirâmide de carboidrato, com percentuais explícitos e os nomes das refeições estratégicas",
+    "Para o cálculo de GER, considera que a paciente é atleta e evita o Mifflin-St Jeor, que subestima nessa população, justificando a equação escolhida",
+    "A auditoria confere a presença das três fases e a justificativa da exceção, sem tratar 'o validador automático passou' como prova de que o modo especial está correto"
+  ]
+}

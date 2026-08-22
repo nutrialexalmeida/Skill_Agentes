@@ -18,20 +18,37 @@ Um hook `UserPromptSubmit` (`.claude/settings.json` → `.claude/hooks/roteador-
 - `.claude/skills/` — skills do sistema (a `roteador` é a inicial; crie novas skills por domínio aqui).
 - `.claude/agents/` — subagentes especializados, acionados por uma skill orquestradora (não diretamente pelo usuário).
 - `.claude/hooks/roteador-contexto.sh` — hook que injeta roteamento + índice da memória por mensagem.
+- `entrada/` — materiais novos que o usuário solta para incorporar às skills.
 
 ## Orquestração multiagente (nutrição)
 
 A skill `nutri-orquestrador` coordena um atendimento nutricional completo em
-fases. As regras clínicas moram em `.claude/skills/nutri-orquestrador/fases/`
-— fonte única de verdade, lida tanto pelos subagentes (Claude Code) quanto
-pelo próprio orquestrador (app claude.ai, sem subagentes).
+fases. Organização em três camadas, por frequência de uso:
+
+- `fases/` — regras clínicas, lidas em todo atendimento. Fonte única de
+  verdade, usada tanto pelos subagentes (Claude Code) quanto pelo próprio
+  orquestrador (app claude.ai, sem subagentes).
+- `referencia/` — carregado só quando a condição aparece (modo especial,
+  questionamento de evidência, falha, incorporação de material).
+- `scripts/validar_plano.py` — executado, não lido. Confere a aritmética da
+  auditoria de forma determinística.
 
 Fluxo: anamnese → (exames ‖ cálculo) → (suplementação ‖ prescrição) →
 auditoria independente. O auditor é sempre uma instância nova que não
 participou da montagem.
 
 Ao mexer numa regra clínica, edite o arquivo de fase — nunca duplique a
-regra dentro do arquivo de agente, que é só um invólucro fino.
+regra dentro do arquivo de agente, que é só um invólucro fino. Se a regra
+nova precisa ser conferida, atualize também o checklist de
+`fases/05-auditoria.md` e rode os evals de `evals/`.
+
+## Materiais novos
+
+O usuário solta arquivos em `entrada/` e pede "processa a entrada". Siga
+`.claude/skills/nutri-orquestrador/referencia/incorporar-material.md`:
+classificar → questionar a origem e a força da evidência → propor destino →
+**aguardar confirmação antes de alterar regra clínica** → aplicar → arquivar
+o original em `entrada/processados/AAAA-MM/`.
 - `memoria/INDICE.md` — índice dos tópicos da memória (uma linha por tópico).
 - `memoria/topicos/*.md` — um arquivo por assunto: resumo, decisões, trabalho realizado, pendências.
 
