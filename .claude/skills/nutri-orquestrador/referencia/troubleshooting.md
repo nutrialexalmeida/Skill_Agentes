@@ -11,6 +11,7 @@ Leia quando algo travar. Não é necessário no caminho feliz.
 - [Alimento não está na base](#alimento-nao-esta-na-base)
 - [A auditoria reprova em ciclo](#a-auditoria-reprova-em-ciclo)
 - [Um subagente devolveu algo incompleto](#um-subagente-devolveu-algo-incompleto)
+- [Um subagente morreu no meio da fase](#um-subagente-morreu-no-meio-da-fase)
 
 ## O cardápio não converge nas tolerâncias
 
@@ -82,6 +83,31 @@ são, nesta ordem:
    preparo — conforme a política de bases.
 3. Deixar o alimento fora do plano e registrar em `observacoes`.
 
+## A base de alimentos inteira não existe
+
+Diferente do caso acima: não é um alimento faltando, é
+`knowledge_base/tables/alimentos.json` ausente do repositório. Acontece
+quando a skill roda fora da instalação completa do NutriPlanner.
+
+Não é motivo para recusar o atendimento, mas muda o que a entrega significa:
+
+1. Monte o plano com valores de composição que você conheça, **declarando a
+   origem** ("TACO 4ª ed., de conhecimento prévio").
+2. Registre em `alertas`, com todas as letras, que **nenhum valor foi
+   conferido contra arquivo versionado**. A aritmética estará validada; a
+   fonte dos números, não.
+3. Liste quantas linhas de composição precisam de conferência antes do plano
+   ir ao paciente.
+4. Nunca escreva que consultou a TACO. Você consultou sua memória dela —
+   são coisas diferentes, e a diferença é exatamente o que o nutricionista
+   responsável precisa saber para decidir se assina o plano.
+
+Para a auditoria: isto é **falha estrutural do repositório**, não da fase de
+prescrição, e não deve reprovar um plano cuja aritmética passou. Reprovar
+aqui puniria a fase por uma limitação que ela apenas reportou com honestidade.
+Registre como ressalva que acompanha a entrega e como pendência de
+manutenção.
+
 ## A auditoria reprova em ciclo
 
 Limite de **2 ciclos de correção**. Se na terceira auditoria ainda houver
@@ -104,3 +130,33 @@ subagente parte de contexto zero — ele não viu a conversa.
 Redespache a fase com os blocos completos. Se o subagente registrou a lacuna
 em `alertas` em vez de inventar um valor, ele fez o certo: o erro foi do
 orquestrador, não dele.
+
+## Um subagente morreu no meio da fase
+
+Diferente do caso acima: aqui não veio bloco nenhum. O subagente foi
+encerrado por limite de sessão da API, erro de infraestrutura ou timeout — a
+notificação vem com status de falha, não com uma resposta ruim.
+
+Isso **não é** falha clínica e não contamina as outras fases. Nada foi
+produzido, então não há nada a descartar.
+
+1. **Não remende com o trabalho parcial.** Se a fase morreu no meio, o que
+   ela chegou a escrever não passou pelo próprio ciclo de validação dela.
+   Ignore e refaça.
+2. **Não faça a fase você mesmo** para "não perder o que já foi feito". Em
+   Modo Code o valor do subagente é o contexto isolado; assumir a fase
+   destrói isso justamente na fase mais cara.
+3. **Redespache o mesmo prompt**, sem alterações. Se a causa foi limite de
+   sessão, espere a janela reabrir antes de tentar de novo — reenviar na
+   hora só queima outra tentativa.
+4. As fases que já retornaram **continuam válidas**. Não refaça o
+   atendimento inteiro por causa de uma fase perdida.
+
+Se a mesma fase morrer duas vezes seguidas, pare de redespachar e diga ao
+usuário o que está acontecendo. Duas mortes seguidas costumam significar que
+o prompt está grande demais ou que a fase está tentando trabalho excessivo —
+não que a terceira tentativa vai funcionar.
+
+Em Modo App esse modo de falha não existe: sem subagente, uma interrupção
+derruba a conversa inteira, e a retomada é pela memória do que já foi
+gravado.
