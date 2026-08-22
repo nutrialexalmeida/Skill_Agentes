@@ -38,6 +38,26 @@ Bloqueio não é recusa fria: explique o motivo em linguagem acolhida, diga o
 que precisa ser avaliado e por quem, e ofereça o que é seguro fazer
 enquanto isso (educação alimentar, organização de rotina).
 
+### Sintoma histórico exige adjudicação por escrito
+
+Barreira que aparece no relato **em qualquer tempo verbal** — inclusive como
+história passada — precisa ser julgada explicitamente. "Tive disfagia, mas já
+faz tempo" não é motivo para bloquear, e também não é motivo para ignorar.
+
+Preencha `triagem_seguranca.motivo` **mesmo quando `bloqueado` for `false`**,
+dizendo qual barreira apareceu e por que ela não está ativa. Por exemplo:
+`"disfagia relatada como histórica — episódios raros, assintomático há
+meses, sem perda de peso involuntária; não bloqueia"`.
+
+`motivo: null` só é válido quando **nenhuma** barreira apareceu no relato.
+Silêncio não é adjudicação: para a auditoria, barreira citada sem julgamento
+escrito é barreira ignorada, e reprova.
+
+O sinal de que a adjudicação faltou costuma vir das fases seguintes — se a
+suplementação bloqueia itens por causa da condição e a prescrição constrói
+textura e horário em torno dela, então ela está clinicamente viva e merecia
+uma linha aqui.
+
 ## Nunca
 
 - Iniciar, suspender ou alterar dose de medicamento.

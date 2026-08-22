@@ -29,6 +29,14 @@ gramas**.
 - Proibido "livre", "à vontade" ou medida sem equivalência quando o item
   contribui para a meta. Item de contribuição desprezível (tempero, ervas)
   pode ser listado à parte como livre, e explicitamente marcado assim.
+- **Teste do "livre": some a exposição plausível do dia.** Se todos os itens
+  livres juntos, nas quantidades que a pessoa realmente usaria, passarem de
+  **1% da meta energética**, eles não são livres — vão para a refeição com
+  gramas. Ervas, temperos secos, sal, vinagre, limão, café sem açúcar e
+  folhosas de baixa densidade (alface, rúcula, agrião, pepino) passam nesse
+  teste. Legume cozido com massa — abobrinha, chuchu, berinjela, cenoura —
+  **não passa**: a ~20 kcal/100 g, duas porções de 150 g já somam ~60 kcal.
+  Não faz sentido convergir o plano em ±2% e deixar 2% fora da contabilidade.
 - Refeições em ordem cronológica de consumo, com horário sugerido.
 
 ## Distribuição — a regra inegociável do modo padrão

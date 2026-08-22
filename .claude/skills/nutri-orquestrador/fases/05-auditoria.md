@@ -59,7 +59,10 @@ sustenta o veredito. "Parece correto" não é evidência. Para os itens que o
 validador cobre, a evidência é a linha que ele imprimiu.
 
 1. Dados essenciais confirmados na anamnese.
-2. Triagem de segurança feita, e nenhuma barreira ativa ignorada.
+2. Triagem de segurança feita, e nenhuma barreira ativa ignorada. Barreira
+   citada no relato em qualquer tempo verbal, inclusive como história
+   passada, exige `motivo` preenchido mesmo com `bloqueado: false` —
+   `motivo: null` com barreira citada é barreira ignorada.
 3. Cálculo metabólico executado, com equação declarada e justificada.
 4. GER/TMB, GET e meta energética exibidos.
 5. Os três macros exibidos em g/dia **e** g/kg.

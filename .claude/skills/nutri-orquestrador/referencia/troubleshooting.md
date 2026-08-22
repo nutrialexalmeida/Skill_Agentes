@@ -91,22 +91,29 @@ quando a skill roda fora da instalação completa do NutriPlanner.
 
 Não é motivo para recusar o atendimento, mas muda o que a entrega significa:
 
-1. Monte o plano com valores de composição que você conheça, **declarando a
-   origem** ("TACO 4ª ed., de conhecimento prévio").
-2. Registre em `alertas`, com todas as letras, que **nenhum valor foi
-   conferido contra arquivo versionado**. A aritmética estará validada; a
-   fonte dos números, não.
-3. Liste quantas linhas de composição precisam de conferência antes do plano
-   ir ao paciente.
-4. Nunca escreva que consultou a TACO. Você consultou sua memória dela —
-   são coisas diferentes, e a diferença é exatamente o que o nutricionista
-   responsável precisa saber para decidir se assina o plano.
+1. Monte o plano com valores de composição que você conheça.
+2. **`fonte_base` nunca diz "TACO" nesse caso.** Escreva a procedência real
+   — "TACO 4ª ed., de conhecimento prévio, não conferido contra arquivo".
+   Declarar "TACO" em cada linha e admitir em `alertas` que a TACO não foi
+   consultada é uma contradição dentro do próprio bloco, e o auditor a trata
+   como tal.
+3. Registre em `alertas`, com todas as letras, que nenhum valor foi
+   conferido contra arquivo versionado, e quantas linhas precisam de
+   conferência antes de o plano ir ao paciente.
 
-Para a auditoria: isto é **falha estrutural do repositório**, não da fase de
-prescrição, e não deve reprovar um plano cuja aritmética passou. Reprovar
-aqui puniria a fase por uma limitação que ela apenas reportou com honestidade.
-Registre como ressalva que acompanha a entrega e como pendência de
-manutenção.
+**A auditoria vai reprovar, e isso está correto.** A regra 4 de
+`../fases/04-prescricao.md` é absoluta: alimento fora da base não entra no
+plano. Um plano montado sem base viola essa regra em toda linha,
+independentemente de a aritmética fechar. Não tente contornar o veredito:
+enquanto a base não existir, nenhuma prescrição deste sistema passa no
+checklist, e é assim que deve ser — a aritmética valida a soma, não a
+procedência dos números somados.
+
+O que isso significa na prática: a dívida é do **repositório**, e a correção
+é versionar `knowledge_base/tables/alimentos.json`, não afrouxar a auditoria.
+Se o nutricionista responsável quiser usar um plano reprovado por este motivo
+específico, é decisão dele, tomada com o veredito à vista — não do sistema,
+entregando como aprovado.
 
 ## A auditoria reprova em ciclo
 

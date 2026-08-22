@@ -122,9 +122,10 @@ tenha o que conferir sem depender de memória.
       {"nome": "", "ordem": 1, "horario_sugerido": "",
        "alimentos": [
          {"alimento": "", "fonte_base": "TACO",
-          "medida_caseira": "", "gramas": 0,
+          "medida_caseira": "", "gramas": 0, "momento": null,
           "kcal": 0, "proteina_g": 0, "carboidrato_g": 0, "gordura_g": 0}
        ],
+       "totais_por_momento": null,
        "totais": {"kcal": 0, "proteina_g": 0, "carboidrato_g": 0, "gordura_g": 0}}
     ],
     "totais_dia": {"kcal": 0, "proteina_g": 0, "carboidrato_g": 0, "gordura_g": 0},
@@ -137,6 +138,21 @@ tenha o que conferir sem depender de memória.
   }
 }
 ```
+
+**Refeição entregue em momentos** (pré-treino, durante, pós-treino): marque
+cada alimento com `momento` e declare `totais_por_momento` como um objeto
+`{"<momento>": {"kcal": 0, "proteina_g": 0, ...}}`. Os dois campos andam
+juntos — um sem o outro é falha de contrato.
+
+Isso não é burocracia. Os totais de cada momento podem estar todos errados e
+ainda assim somar o total correto da refeição, o que passa despercebido em
+qualquer conferência agregada. Como `totais_por_momento` é estruturado,
+`scripts/validar_plano.py` confere momento a momento contra os alimentos
+atribuídos a cada um. Descrever o fracionamento só em prosa dentro de
+`observacoes` coloca a instrução que o paciente executa fora do alcance do
+validador.
+
+Refeição não fracionada deixa os dois campos como `null`.
 
 ## AUDITORIA (fase 4)
 

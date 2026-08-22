@@ -117,6 +117,89 @@ Decisões desta rodada:
 Tamanhos: SKILL.md 135 linhas, maior arquivo de fase 125, validador 385.
 Todos bem abaixo do limite de 500.
 
+## Teste end-to-end com caso real (2026-08-22)
+
+Rodado em Modo Code com os 5 subagentes, sobre anamnese real + laudo
+antropométrico ISAK de atleta de triathlon. **Dados do paciente ficaram só no
+scratchpad, nunca commitados** — repositório conferido, limpo.
+
+Resultado do fluxo: as 5 fases executaram, paralelismo funcionou nas fases 2
+e 3, e o **auditor REPROVOU** o plano por 4 dos 23 itens (2, 8, 16, 17). Isso
+é sucesso do teste, não fracasso: a auditoria independente pegou o que as
+outras fases deixaram passar, inclusive erros do próprio orquestrador.
+
+### O que funcionou
+
+- **Escolha de equação**: usou Cunningham (GER 2.009 kcal) por haver massa
+  magra medida, não Mifflin-St Jeor (que daria 1.699, −310 kcal, −15,4%).
+  A regra da fase 02 pegou a armadilha do caso.
+- **IMC 26,1 não disparou lógica de sobrepeso** em nenhuma fase — com 13,3%
+  de gordura, duas fases registraram explicitamente que a faixa "sobrepeso"
+  da OMS aqui reflete massa muscular.
+- **Bloqueio de suplementos respeitado integralmente** pela prescrição: 0
+  ocorrências de whey/gel/creatina em 33 linhas de alimento e 23
+  substituições; 160,2 g de proteína 100% de alimento.
+- **Ciclo de feedback funcionou**: a prescrição rodou o mesmo validador que a
+  auditoria rodaria e chegou já convergida (exit 0, 14/14).
+- **O auditor rodou controle negativo** no validador (perturbou um valor para
+  confirmar que o script reprova) antes de confiar no exit 0. Não foi
+  instruído a fazer isso.
+
+### Achados clínicos que ninguém tinha semeado
+
+- **Risco de REDs** (baixa disponibilidade energética): volume de 7
+  dias/semana, %G já magro, efeito sanfona, perda de apetite sob estresse,
+  déficit por cima. Motivou déficit conservador de 10% em vez de 15-20%.
+- **Creatina eleva creatinina sérica** e simula queda de TFGe — exige
+  cistatina C junto se pedir exame renal.
+- **Beta-alanina em protocolo errado**: paciente toma dose única matinal; o
+  regime estudado é saturação em doses fracionadas.
+- **Doping por responsabilidade objetiva**: o bloqueio não é da molécula
+  (creatina e cafeína têm nível A) e sim do produto não rastreado, sem
+  marca/lote/certificação, em atleta de competição oficial.
+- **Análise de sensibilidade da MLG**: o laudo declara %G de 5,6 a 23,6%
+  entre 31 equações; a meta honesta é 3.293-3.857 kcal, não "3.616".
+
+### Correções aplicadas ao sistema
+
+| Achado | Correção |
+|---|---|
+| Subagente morre por limite de API (não estava coberto) | nova seção em `troubleshooting.md` — não remendar o parcial, não assumir a fase, redespachar o mesmo prompt |
+| Base de alimentos inteira ausente | nova seção em `troubleshooting.md` |
+| Totais de momentos errados que somam certo (item 8) | `validar_plano.py` ganhou `validar_momentos()`; `totais_por_momento` virou contrato em `HANDOFF.md` |
+| Barreira histórica sem adjudicação (item 2) | `fases/00-anamnese.md` exige `motivo` preenchido mesmo com `bloqueado: false`; checklist do item 2 atualizado |
+| "Livre" para legume com massa (item 17) | `fases/04-prescricao.md` ganhou o teste do 1% da meta energética |
+
+### ERRO MEU que o teste corrigiu — não repetir
+
+Escrevi em `troubleshooting.md` que base de alimentos ausente **não deveria
+reprovar** um plano cuja aritmética passou. O auditor reprovou assim mesmo, e
+com razão:
+
+1. A regra 4 da fase 04-prescricao é absoluta ("alimento fora da base não
+   entra no plano"), e 33 linhas entraram.
+2. Todas as 33 linhas declaravam `fonte_base: "TACO"` enquanto o mesmo bloco
+   admitia em `alertas` que a TACO nunca foi consultada — contradição interna.
+3. **Eu tinha colocado uma regra que afrouxa julgamento clínico em
+   `referencia/`, quando a regra mora em `fases/`.** Violei o princípio "uma
+   regra, um dono" que eu mesmo escrevi no MANUTENCAO.md.
+
+Texto corrigido: a auditoria **deve** reprovar, `fonte_base` nunca diz "TACO"
+sem consultar a TACO, e a dívida é do repositório. Lição geral: nunca use
+`referencia/` para relaxar uma regra de `fases/`.
+
+### Erros meus como orquestrador que o auditor pegou
+
+- ANAMNESE com "dor/incômodo ao engolir" (= disfagia, barreira listada) e
+  `triagem_seguranca: {bloqueado: false, motivo: null}`. Não bloqueava
+  mesmo, mas faltou escrever por quê.
+- ANAMNESE com contradição interna: "acorda 05:00" e "ciclismo 05:00". A
+  prescrição resolveu agendando pré-treino às 04:35, sem registrar como
+  premissa.
+- Ao salvar SUPLEMENTACAO em disco, reformatei o bloco fora do schema de
+  `HANDOFF.md` (faltaram `avaliados`, `observacoes`, `fonte`; usei `motivos`
+  em vez de `motivo`). O auditor pegou como falha de contrato.
+
 ## Ressalva sobre "alta liberdade"
 
 O guia pedia "alta liberdade (instruções baseadas em texto)". Aplicado
@@ -131,11 +214,21 @@ ajustar à fragilidade da tarefa:
 
 ## Pendências
 
-- **Não testado end-to-end.** Os três evals foram escritos mas nunca
-  executados. O validador Python foi testado (caso conforme, caso com 9
-  defeitos plantados, entrada malformada — todos com o resultado esperado),
-  mas o fluxo completo do atendimento não. Rodar `evals/` em sessão limpa,
-  nos três modelos e nos dois modos, antes de usar em atendimento real.
+- **Evals ainda não executados** — o fluxo foi testado end-to-end com um caso
+  real (ver seção acima), mas os três cenários de `evals/` continuam sem
+  rodar em sessão limpa. Falta em especial o eval 02 (barreira de segurança)
+  nos três modelos, e qualquer teste em **Modo App**: até agora só o Modo
+  Code foi exercitado.
+- **Base de alimentos é a pendência bloqueante.** Enquanto
+  `knowledge_base/tables/alimentos.json` não existir, nenhuma prescrição
+  passa no checklist — o item 16 reprova por construção. Versionar essa base
+  é o que destrava o sistema para uso real.
+- Outras ausências de infraestrutura, não bloqueantes: `calculos.json`
+  (tolerâncias e guardrail energético numérico), `calculo_metabolico.py`,
+  `meal_engine.py`, `substitution_engine.py`, `regulatory_gate.py`.
+- **Caso de regressão**: o atendimento testado é bom material para
+  `evals/fixtures/`, mas exige anonimizar antes (ID em vez de nome, sem
+  telefone, e-mail ou IP).
 - Os scripts e o `knowledge_base/` da nutriplanner-pro não estão neste
   repositório — as fases os referenciam mas caem em modo manual. Decidir se
   vale trazer a nutriplanner-pro para cá e unificar.

@@ -297,6 +297,83 @@ def validar_piramide(somados: list[dict], modo: str, tol: dict, rel: Relatorio) 
         )
 
 
+def validar_momentos(prescricao: dict, rel: Relatorio) -> None:
+    """Confere os totais declarados de cada momento de uma refeição fracionada.
+
+    Uma refeição pode ser entregue em momentos (pré-treino, durante, pós). Os
+    totais de cada momento podem estar todos errados e ainda assim somar o
+    total correto da refeição — o que passa despercebido em qualquer
+    conferência agregada. É a instrução que o paciente executa, então precisa
+    bater alimento por alimento, não só no fim.
+
+    Só roda quando a refeição declara `totais_por_momento`; refeição sem
+    fracionamento não é afetada.
+    """
+    checou_alguma = False
+    problemas = []
+
+    for refeicao in prescricao.get("refeicoes", []):
+        declarados = refeicao.get("totais_por_momento")
+        if not declarados:
+            continue
+        checou_alguma = True
+        nome_ref = refeicao.get("nome", "?")
+
+        somado: dict[str, dict] = {}
+        for alimento in refeicao.get("alimentos", []):
+            momento = alimento.get("momento")
+            if momento is None:
+                problemas.append(
+                    f"'{alimento.get('alimento', '?')}' em '{nome_ref}' sem campo momento, "
+                    f"mas a refeicao declara totais_por_momento"
+                )
+                continue
+            acc = somado.setdefault(
+                momento, {"kcal": 0.0, "proteina": 0.0, "carboidrato": 0.0, "gordura": 0.0}
+            )
+            acc["kcal"] += alimento.get("kcal", 0) or 0
+            for macro in MACROS:
+                acc[macro] += alimento.get(f"{macro}_g", 0) or 0
+
+        for momento, informado in declarados.items():
+            calculado = somado.get(momento)
+            if calculado is None:
+                problemas.append(
+                    f"momento '{momento}' de '{nome_ref}' declarado mas sem nenhum alimento atribuido"
+                )
+                continue
+            for campo, valor in (
+                ("kcal", calculado["kcal"]),
+                ("proteina_g", calculado["proteina"]),
+                ("carboidrato_g", calculado["carboidrato"]),
+                ("gordura_g", calculado["gordura"]),
+            ):
+                if campo not in informado:
+                    continue
+                if abs(informado[campo] - valor) > 0.5:
+                    problemas.append(
+                        f"'{nome_ref}' / '{momento}' {campo}: declarado {informado[campo]:.1f}, "
+                        f"soma dos itens {valor:.1f}"
+                    )
+
+        for momento in somado:
+            if momento not in declarados:
+                problemas.append(
+                    f"momento '{momento}' de '{nome_ref}' tem alimentos mas nao foi declarado "
+                    f"em totais_por_momento"
+                )
+
+    if not checou_alguma:
+        return
+
+    rel.registrar(
+        "Totais de cada momento conferem com os alimentos atribuidos a ele",
+        not problemas,
+        "; ".join(problemas) if problemas
+        else "todos os momentos declarados batem com a soma dos seus itens",
+    )
+
+
 def validar_gramas_explicitas(prescricao: dict, rel: Relatorio) -> None:
     """Confere que todo alimento tem gramas e nenhum usa medida vaga."""
     vagos = {"livre", "a vontade", "à vontade", "q.b.", "a gosto"}
@@ -330,6 +407,7 @@ def validar(caso: dict, tol: dict) -> Relatorio:
     validar_metas(calculo, real, tol, rel)
     validar_uniformidade(somados, tol, rel)
     validar_piramide(somados, modo, tol, rel)
+    validar_momentos(prescricao, rel)
     validar_gramas_explicitas(prescricao, rel)
     return rel
 
