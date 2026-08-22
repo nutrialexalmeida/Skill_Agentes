@@ -31,6 +31,8 @@ Se `memoria/` não tiver nada relevante, siga em frente sem contexto extra.
 1. Consulte a lista de skills disponíveis na sessão (listagem de skills do sistema e as skills do projeto em `.claude/skills/`).
 2. Regras de decisão:
    - Existe uma skill cujo gatilho/descrição cobre o pedido? → **Invoque-a com a ferramenta Skill** antes de qualquer outra ação.
+   - O pedido é um atendimento nutricional que envolve mais de uma etapa (exames, cálculo metabólico, suplementação, montagem de plano)? → Invoque a skill `nutri-orquestrador`, que coordena as fases e despacha para os subagentes `nutri-*`. Não chame os subagentes diretamente: a ordem das fases e a auditoria final são responsabilidade do orquestrador.
+   - O pedido é para processar material novo colocado em `entrada/` ("processa a entrada", "incorpora esses arquivos", "atualiza a skill com isso")? → Siga `.claude/skills/nutri-orquestrador/referencia/incorporar-material.md`. Nunca incorpore regra clínica sem confirmação do usuário.
    - O pedido envolve um serviço conectado (Figma, Canva, Metricool, Gmail, GitHub, Meta Ads, PubMed...)? → Use `ToolSearch` para carregar as ferramentas MCP adequadas e siga as instruções do servidor (ex.: Figma exige a skill `/figma-use` antes de `use_figma`).
    - Nenhuma skill cobre o pedido? → Execute diretamente com as ferramentas padrão (Read, Edit, Bash, etc.) e registre na memória que não havia skill para esse tipo de pedido (candidata a skill futura).
 3. Se o pedido for ambíguo entre duas skills, escolha a mais específica; só pergunte ao usuário se a escolha mudar o resultado de forma significativa.

@@ -1,0 +1,19 @@
+{
+  "skills": ["nutri-orquestrador"],
+  "query": "Preciso montar um plano alimentar para um paciente: homem, 34 anos, 78 kg, 1,79 m, sedentário mas quer começar a treinar 3x por semana, objetivo é perder gordura mantendo massa magra. Não tem restrição alimentar, não usa medicamento, sem doença conhecida. Quer 4 refeições por dia. Não trouxe exames.",
+  "files": [],
+  "expected_behavior": [
+    "Anuncia em qual modo de execução está rodando (Code ou App) antes de começar",
+    "Coleta ou confirma os dados essenciais e emite um bloco ANAMNESE antes de qualquer cálculo",
+    "Não bloqueia o atendimento pela ausência de exames: emite EXAMES com disponivel false e uma lista de exames recomendados específicos para o objetivo de perda de gordura, não uma lista genérica",
+    "Declara qual equação de GER usou e justifica a escolha para um adulto geral (espera-se Mifflin-St Jeor)",
+    "Apresenta GER/TMB, GET e meta energética em kcal, e os três macronutrientes em g/dia E em g/kg",
+    "Define proteína dentro ou acima da faixa protetora de 1,0 a 1,3 g/kg, já que há restrição calórica com objetivo de preservar massa magra",
+    "Monta as 4 refeições com alimentos, medida caseira e gramas exatas, sem usar 'livre' ou 'à vontade' em item que conta para a meta",
+    "Distribui proteína e gordura de forma uniforme entre as 4 refeições e carboidrato em pirâmide estritamente decrescente da primeira à última",
+    "Apresenta kcal e macros planejados e reais por refeição, e os totais do dia",
+    "Gera ao menos uma substituição por componente principal, com gramas e medida caseira",
+    "Executa uma auditoria final que confere as contas e emite veredito explícito de aprovado ou reprovado",
+    "As calorias reais ficam dentro de ±2% da meta e os macros dentro de ±5%"
+  ]
+}
