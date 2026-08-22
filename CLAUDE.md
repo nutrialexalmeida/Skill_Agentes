@@ -16,7 +16,22 @@ Um hook `UserPromptSubmit` (`.claude/settings.json` → `.claude/hooks/roteador-
 ## Estrutura
 
 - `.claude/skills/` — skills do sistema (a `roteador` é a inicial; crie novas skills por domínio aqui).
+- `.claude/agents/` — subagentes especializados, acionados por uma skill orquestradora (não diretamente pelo usuário).
 - `.claude/hooks/roteador-contexto.sh` — hook que injeta roteamento + índice da memória por mensagem.
+
+## Orquestração multiagente (nutrição)
+
+A skill `nutri-orquestrador` coordena um atendimento nutricional completo em
+fases. As regras clínicas moram em `.claude/skills/nutri-orquestrador/fases/`
+— fonte única de verdade, lida tanto pelos subagentes (Claude Code) quanto
+pelo próprio orquestrador (app claude.ai, sem subagentes).
+
+Fluxo: anamnese → (exames ‖ cálculo) → (suplementação ‖ prescrição) →
+auditoria independente. O auditor é sempre uma instância nova que não
+participou da montagem.
+
+Ao mexer numa regra clínica, edite o arquivo de fase — nunca duplique a
+regra dentro do arquivo de agente, que é só um invólucro fino.
 - `memoria/INDICE.md` — índice dos tópicos da memória (uma linha por tópico).
 - `memoria/topicos/*.md` — um arquivo por assunto: resumo, decisões, trabalho realizado, pendências.
 
